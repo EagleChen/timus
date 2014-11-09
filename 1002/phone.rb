@@ -1,32 +1,37 @@
 def translate(origin)
-  origin.split(//).map do |c|
-    case c
-    when /[ij]/ then "1"
-    when /[abc]/ then "2"
-    when /[def]/ then "3"
-    when /[gh]/ then "4"
-    when /[kl]/ then "5"
-    when /[mn]/ then "6"
-    when /[prs]/ then "7"
-    when /[tuv]/ then "8"
-    when /[wxy]/ then "9"
-    when /[oqz]/ then "0"
-    end
-  end.join
+  dict = { "a" => "2", "b" => "2", "c" => "2", "d" => "3", "e" => "3", "f" => "3",
+           "g" => "4", "h" => "4", "i" => "1", "j" => "1", "k" => "5", "l" => "5",
+           "m" => "6", "n" => "6", "o" => "0", "p" => "7", "q" => "0", "r" => "7",
+           "s" => "7", "t" => "8", "u" => "8", "v" => "8", "w" => "9", "x" => "9",
+           "y" => "9", "z" => "0" }
+  origin.chars.map { |c| dict[c] }.join
 end
 
-Node = Struct.new(:origin, :value, :children) do
-  def add_child(originWord, word, index)
-    key = word[index]
-    unless children.key?(key)
-      children[key] = Node.new(nil, nil, {})
-    end
+class Node
+  attr_accessor :origin, :value, :children
 
-    if (index == word.length - 1)
-      children[key].origin = originWord
-      children[key].value = word
-    else
-      children[key].add_child(originWord, word, index+1)
+  def initialize(o, v, c)
+    @origin = o
+    @value = v
+    @children = c
+  end
+
+  def add_child(originWord, word, index)
+    candidates = @children
+    loop do
+      key = word[index]
+      unless candidates.key?(key)
+        candidates[key] = Node.new(nil, nil, {})
+      end
+
+      if (index == word.length - 1)
+        candidates[key].origin = originWord
+        candidates[key].value = word
+        break
+      else
+        candidates = candidates[key].children
+        index += 1
+      end
     end
   end
 
@@ -83,13 +88,13 @@ loop do
 
   root = Node.new(nil, nil, {})
   num = gets.to_i
-#now = Time.now
+now = Time.now
   num.times do
     origin = gets.chomp
     word = translate(origin)
     root.add_child(origin, word, 0)
   end
-#p "tree completed : #{Time.now - now}"
+p "tree completed : #{Time.now - now}"
 
   puts search(root, phone)
 end
