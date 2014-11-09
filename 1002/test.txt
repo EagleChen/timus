@@ -11844,7 +11844,7 @@ bewitched
 bewitches
 bewitching
 beyond
-bhagavad-gita
+bhagavadgita
 bhutan
 bialystok
 bianco
@@ -27298,7 +27298,7 @@ holzman
 hom
 homage
 home
-home-brew
+homebrew
 homed
 homeless
 homely
@@ -27771,7 +27771,7 @@ hysterically
 ian
 iberia
 iberian
-ibero-
+ibero
 ibex
 ibid
 ibis
@@ -31961,7 +31961,7 @@ luxurious
 luxuriously
 luxury
 luzon
-l'vov
+lvov
 lydia
 lying
 lykes
