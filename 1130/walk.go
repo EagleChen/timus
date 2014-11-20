@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -20,10 +21,10 @@ func combinable(x, y, lSquare int) bool {
 func main() {
 	in := bufio.NewReader(os.Stdin)
 	out := bufio.NewWriter(os.Stdout)
-	inputNum, _, _ := in.ReadRune()
-	num := int(inputNum)
-	inputL, _, _ := in.ReadRune()
-	l := int(inputL)
+	inputNum, _ := in.ReadString('\n')
+	num, _ := strconv.Atoi(strings.TrimSpace(inputNum))
+	inputL, _ := in.ReadString('\n')
+	l, _ := strconv.Atoi(strings.TrimSpace(inputL))
 	lSquare := l * l
 
 	if num == 1 {
@@ -33,13 +34,13 @@ func main() {
 		return
 	}
 
-	v1 := vec{0, 0, make([]int, num)}
-	v2 := vec{0, 0, make([]int, num)}
+	v1 := vec{0, 0, make([]int, 0)}
+	v2 := vec{0, 0, make([]int, 0)}
 	for i := 0; i < num; i++ {
-		inputX, _, _ := in.ReadRune()
-		x := int(inputX)
-		inputY, _, _ := in.ReadRune()
-		y := int(inputY)
+		xY, _ := in.ReadString('\n')
+		strs := strings.Split(strings.TrimSpace(xY), " ")
+		x, _ := strconv.Atoi(strs[0])
+		y, _ := strconv.Atoi(strs[1])
 
 		x1 := v1.x + x
 		y1 := v1.y + y
@@ -70,15 +71,18 @@ func main() {
 	yFinal := v1.y + v2.y
 	if combinable(xFinal, yFinal, lSquare) {
 		for i := 0; i < num; i++ {
-			fmt.Fprintf(out, "+")
+			fmt.Fprint(out, "+")
 		}
 		fmt.Fprintf(out, "\n")
 	} else {
-		result := strings.Repeat("+", num)
-		for i := range v1.list {
-			result[i] = '-'
+		result := make([]string, num)
+		for i, _ := range result {
+			result[i] = "+"
 		}
-		fmt.Fprintln(out, result)
+		for _, v := range v1.list {
+			result[v] = "-"
+		}
+		fmt.Fprintln(out, strings.Join(result, ""))
 	}
 	out.Flush()
 }
