@@ -11,11 +11,46 @@ import (
 type vec struct {
 	x    int
 	y    int
-	list []int
+	list []string
 }
 
-func combinable(x, y, lSquare int) bool {
-	return x*x+y*y <= lSquare
+func combine(list1, list2 []string, direction string) {
+	num := len(list1)
+	if direction == "+" {
+		for j := 0; j < num; j++ {
+			if list2[j] != "" {
+				list1[j] = list2[j]
+				list2[j] = ""
+			}
+		}
+	} else {
+		for j := 0; j < num; j++ {
+			switch list2[j] {
+			case "+":
+				list1[j] = "-"
+				list2[j] = ""
+			case "-":
+				list1[j] = "+"
+				list2[j] = ""
+			}
+		}
+	}
+}
+
+func combinable(x1, y1, x2, y2, lSquare int) (int, int, string, bool) {
+	x := x1 + x2
+	y := y1 + y2
+	if x*x+y*y <= lSquare {
+		return x, y, "+", true
+	} else {
+		x := x1 - x2
+		y := y1 - y2
+		if x*x+y*y <= lSquare {
+			return x, y, "-", true
+		} else {
+			return -1, -1, "", false
+		}
+	}
 }
 
 func main() {
@@ -34,55 +69,38 @@ func main() {
 		return
 	}
 
-	v1 := vec{0, 0, make([]int, 0)}
-	v2 := vec{0, 0, make([]int, 0)}
+	v1 := vec{0, 0, make([]string, num)}
+	v2 := vec{0, 0, make([]string, num)}
 	for i := 0; i < num; i++ {
 		xY, _ := in.ReadString('\n')
 		strs := strings.Split(strings.TrimSpace(xY), " ")
 		x, _ := strconv.Atoi(strs[0])
 		y, _ := strconv.Atoi(strs[1])
 
-		x1 := v1.x + x
-		y1 := v1.y + y
-		if combinable(x1, y1, lSquare) {
-			v1.x = x1
-			v1.y = y1
-			v1.list = append(v1.list, i)
+		if resX, resY, direction, ok := combinable(v1.x, v1.y, x, y, lSquare); ok {
+			v1.x = resX
+			v1.y = resY
+			v1.list[i] = direction
 		} else {
-			x2 := v2.x + x
-			y2 := v2.y + y
-			if combinable(x2, y2, lSquare) {
-				v2.x = x2
-				v2.y = y2
-				v2.list = append(v2.list, i)
+			if resX, resY, direction, ok := combinable(v2.x, v2.y, x, y, lSquare); ok {
+				v2.x = resX
+				v2.y = resY
+				v2.list[i] = direction
 			} else {
-				v1.x += v2.x
-				v1.y += v2.y
-				v1.list = append(v1.list, v2.list...)
+				resX, resY, direction, _ := combinable(v1.x, v1.y, v2.x, v2.y, lSquare)
+				v1.x = resX
+				v1.y = resY
+				combine(v1.list, v2.list, direction)
 
-				v2.x, v2.y = 0, 0
-				v2.list = v2.list[:0]
+				v2.x, v2.y = x, y
+				v2.list[i] = "+"
 			}
 		}
 	}
 
 	fmt.Fprintln(out, "YES")
-	xFinal := v1.x + v2.x
-	yFinal := v1.y + v2.y
-	if combinable(xFinal, yFinal, lSquare) {
-		for i := 0; i < num; i++ {
-			fmt.Fprint(out, "+")
-		}
-		fmt.Fprintf(out, "\n")
-	} else {
-		result := make([]string, num)
-		for i, _ := range result {
-			result[i] = "+"
-		}
-		for _, v := range v1.list {
-			result[v] = "-"
-		}
-		fmt.Fprintln(out, strings.Join(result, ""))
-	}
+	_, _, direction, _ := combinable(v1.x, v1.y, v2.x, v2.y, 2*lSquare)
+	combine(v1.list, v2.list, direction)
+	fmt.Fprintln(out, strings.Join(v1.list, ""))
 	out.Flush()
 }
