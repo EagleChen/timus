@@ -19,6 +19,8 @@ func maxSum(arr []int) int {
 
 		if sum > 0 {
 			tail = sum
+		} else {
+			tail = 0
 		}
 	}
 
