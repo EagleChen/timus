@@ -1,32 +1,53 @@
 package main
 
-import (
-	"fmt"
-	"sort"
-)
+import "fmt"
 
-func main() {
-	var count int
+type Num struct {
+	index int
+	value int
+}
 
-	fmt.Scan(&count)
-
-	values := []int{}
-	num := 0
-	for i := 0; i < count; i++ {
-		fmt.Scan(&num)
-		values = append(values, num)
+func addNum(values []Num, num Num, window int) []Num {
+	if len(values) == 0 || window == 1 {
+		return []Num{num}
 	}
 
-	compare := make([]int, count)
-	for {
-		copy(compare, values)
-		sort.Ints(compare)
-		fmt.Println(compare[count-1])
+	start := 0
+	if num.index-values[0].index == window {
+		start = 1
+	}
 
-		fmt.Scan(&num)
-		if num == -1 {
+	end := len(values) - 1
+	for ; end >= start && num.value >= values[end].value; end-- {
+	}
+
+	if end < start {
+		return []Num{num}
+	}
+
+	return append(values[start:end+1], num)
+}
+
+func main() {
+	var window int
+
+	fmt.Scan(&window)
+
+	values := []Num{}
+	input := 0
+	i := 0
+	for ; i < window; i++ {
+		fmt.Scan(&input)
+		values = addNum(values, Num{i, input}, window)
+	}
+
+	for ; ; i++ {
+		fmt.Println(values[0].value)
+
+		fmt.Scan(&input)
+		if input == -1 {
 			break
 		}
-		values = append(values[1:count], num)
+		values = addNum(values, Num{i, input}, window)
 	}
 }
