@@ -1,16 +1,14 @@
 package main
 
 import "fmt"
+import "math/big"
 
 func main() {
-	var K int
+	var K int64
 	fmt.Scan(&K)
 
-	var noLeading uint64 = 55
-	var leading uint64 = 36
-	var result uint64 = leading
-	for i := K - 1; i > 0; i-- {
-		result *= noLeading
-	}
+	result := big.NewInt(1)
+	result = result.Mul(big.NewInt(36), result.Exp(big.NewInt(55), big.NewInt(K-1), nil))
+
 	fmt.Println(result)
 }
